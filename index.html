@@ -491,10 +491,7 @@
 
         function setBackground() {
             const bgImage = document.getElementById('bgImage');
-            const baseUrl = window.innerWidth <= 768
-                ? 'xxx.jpg'
-                : 'xxx.jpg';
-            const imageUrl = `${baseUrl}&t=${Date.now()}`;
+            const imageUrl = window.innerWidth <= 768 ? 'xxx.jpg' : 'xxx.jpg';
 
             bgImage.style.backgroundImage = `url(${imageUrl})`;
             bgImage.classList.add('loaded');
