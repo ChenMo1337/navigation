@@ -184,14 +184,18 @@
 
         /* 卡片网格 */
         .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; 
             gap: 1.5rem;
-            justify-content: center;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         /* 卡片样式 */
         .card {
+            width: 160px;
+            flex: 0 0 auto;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 20px;
             padding: 1.5rem;
@@ -488,8 +492,8 @@
         function setBackground() {
             const bgImage = document.getElementById('bgImage');
             const baseUrl = window.innerWidth <= 768
-                ? 'https://img-api.wuxie.de/acg/13/sp'
-                : 'https://img-api.wuxie.de/acg/13/sp';
+                ? 'xxx.jpg'
+                : 'xxx.jpg';
             const imageUrl = `${baseUrl}&t=${Date.now()}`;
 
             bgImage.style.backgroundImage = `url(${imageUrl})`;
