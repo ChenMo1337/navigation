@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人导航主页</title>
+    <title>猫memeAI资讯站</title>
     <link rel="stylesheet" href="./xiny/fontawesome/css/all.min.css">
     <link rel="icon" href="./xiny/favicon.ico">
     <style>
@@ -14,7 +14,7 @@
             box-sizing: border-box;
         }
 
-body {
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
             background: linear-gradient(135deg, #2C3E50 0%, #b3dace 30%, #cce8db 60%, #e3f5ec 100%);
@@ -79,23 +79,56 @@ body {
             pointer-events: none;
         }
 
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid #ffffff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .sk-chase {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            animation: sk-chase 2.5s infinite linear both;
         }
 
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
+        .sk-chase-dot {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            animation: sk-chase-dot 2.0s infinite ease-in-out both;
+        }
 
-            100% {
-                transform: rotate(360deg);
-            }
+        .sk-chase-dot:before {
+            content: '';
+            display: block;
+            width: 25%;
+            height: 25%;
+            background-color: #fff;
+            border-radius: 100%;
+            animation: sk-chase-dot-before 2.0s infinite ease-in-out both;
+        }
+
+        .sk-chase-dot:nth-child(1) { animation-delay: -1.1s; }
+        .sk-chase-dot:nth-child(2) { animation-delay: -1.0s; }
+        .sk-chase-dot:nth-child(3) { animation-delay: -0.9s; }
+        .sk-chase-dot:nth-child(4) { animation-delay: -0.8s; }
+        .sk-chase-dot:nth-child(5) { animation-delay: -0.7s; }
+        .sk-chase-dot:nth-child(6) { animation-delay: -0.6s; }
+        .sk-chase-dot:nth-child(1):before { animation-delay: -1.1s; }
+        .sk-chase-dot:nth-child(2):before { animation-delay: -1.0s; }
+        .sk-chase-dot:nth-child(3):before { animation-delay: -0.9s; }
+        .sk-chase-dot:nth-child(4):before { animation-delay: -0.8s; }
+        .sk-chase-dot:nth-child(5):before { animation-delay: -0.7s; }
+        .sk-chase-dot:nth-child(6):before { animation-delay: -0.6s; }
+
+        @keyframes sk-chase {
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes sk-chase-dot {
+            80%, 100% { transform: rotate(360deg); }
+        }
+
+        @keyframes sk-chase-dot-before {
+            50% { transform: scale(0.4); }
+            100%, 0% { transform: scale(1.0); }
         }
 
         /* 主容器 */
@@ -234,13 +267,8 @@ body {
             text-align: center;
         }
 
-        .card:nth-child(even) {
-            animation-delay: 0.1s;
-        }
-
-        .card:nth-child(3n) {
-            animation-delay: 0.2s;
-        }
+        .card:nth-child(even) { animation-delay: 0.1s; }
+        .card:nth-child(3n) { animation-delay: 0.2s; }
 
         @keyframes cardFadeIn {
             to {
@@ -260,9 +288,7 @@ body {
             transition: left 0.5s ease;
         }
 
-        .card:hover::before {
-            left: 100%;
-        }
+        .card:hover::before { left: 100%; }
 
         .card:hover {
             transform: translateY(-8px) scale(1.02);
@@ -295,12 +321,8 @@ body {
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
-        /* 隐藏卡片 */
-        .card.hidden {
-            display: none;
-        }
+        .card.hidden { display: none; }
 
-        /* 无结果提示 */
         .no-results {
             text-align: center;
             color: white;
@@ -310,166 +332,19 @@ body {
             display: none;
         }
 
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .cards-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 1rem;
-            }
-
-            .card {
-                padding: 1.2rem;
-            }
-
-            .search-box {
-                padding: 0.8rem 1.2rem 0.8rem 2.5rem;
-            }
-
-            .search-icon {
-                left: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .cards-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-
-            .header h1 {
-                font-size: 1.8rem;
-            }
-        }
-
         /* 滚动条样式 */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .sk-chase {
-            width: 40px;
-            height: 40px;
-            position: relative;
-            animation: sk-chase 2.5s infinite linear both;
-        }
-
-        .sk-chase-dot {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            left: 0;
-            top: 0;
-            animation: sk-chase-dot 2.0s infinite ease-in-out both;
-        }
-
-        .sk-chase-dot:before {
-            content: '';
-            display: block;
-            width: 25%;
-            height: 25%;
-            background-color: #fff;
-            border-radius: 100%;
-            animation: sk-chase-dot-before 2.0s infinite ease-in-out both;
-        }
-
-        .sk-chase-dot:nth-child(1) {
-            animation-delay: -1.1s;
-        }
-
-        .sk-chase-dot:nth-child(2) {
-            animation-delay: -1.0s;
-        }
-
-        .sk-chase-dot:nth-child(3) {
-            animation-delay: -0.9s;
-        }
-
-        .sk-chase-dot:nth-child(4) {
-            animation-delay: -0.8s;
-        }
-
-        .sk-chase-dot:nth-child(5) {
-            animation-delay: -0.7s;
-        }
-
-        .sk-chase-dot:nth-child(6) {
-            animation-delay: -0.6s;
-        }
-
-        .sk-chase-dot:nth-child(1):before {
-            animation-delay: -1.1s;
-        }
-
-        .sk-chase-dot:nth-child(2):before {
-            animation-delay: -1.0s;
-        }
-
-        .sk-chase-dot:nth-child(3):before {
-            animation-delay: -0.9s;
-        }
-
-        .sk-chase-dot:nth-child(4):before {
-            animation-delay: -0.8s;
-        }
-
-        .sk-chase-dot:nth-child(5):before {
-            animation-delay: -0.7s;
-        }
-
-        .sk-chase-dot:nth-child(6):before {
-            animation-delay: -0.6s;
-        }
-
-        @keyframes sk-chase {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes sk-chase-dot {
-
-            80%,
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes sk-chase-dot-before {
-            50% {
-                transform: scale(0.4);
-            }
-
-            100%,
-            0% {
-                transform: scale(1.0);
-            }
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.5); }
     </style>
 </head>
 
 <body>
+    <!-- 背景图片 -->
     <div class="bg-image" id="bgImage"></div>
 
+    <!-- 加载动画 -->
     <div class="loading-container" id="loadingContainer">
         <div class="sk-chase">
             <div class="sk-chase-dot"></div>
@@ -481,26 +356,73 @@ body {
         </div>
     </div>
 
-
-<!-- 左上角实时时间 -->
+    <!-- 左上角实时时间 -->
     <div id="liveClock" class="live-clock"></div>
-    <div class="container" id="mainContainer">
+
+    <!-- 主容器 -->
     <div class="container" id="mainContainer">
         <header class="header">
             <h1>猫memeAI资讯站</h1>
             <p>前沿AI资讯一网打尽 赋能你的数字未来</p>
         </header>
 
-    <script>
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-box" placeholder="搜索服务..." id="searchInput">
+        </div>
 
+        <div id="content"></div>
+
+        <div class="no-results" id="noResults">
+            <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+            <p>未找到匹配的服务</p>
+        </div>
+    </div>
+
+    <script>
         let config = null;
+
+        // 实时更新北京时间
+        function updateClock() {
+            const clockElement = document.getElementById('liveClock');
+            const now = new Date();
+            
+            const options = {
+                timeZone: 'Asia/Shanghai',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            };
+            
+            const formatter = new Intl.DateTimeFormat('zh-CN', options);
+            const parts = formatter.formatToParts(now);
+            
+            let year = '', month = '', day = '', hour = '', minute = '', second = '';
+            parts.forEach(part => {
+                if (part.type === 'year') year = part.value;
+                if (part.type === 'month') month = part.value;
+                if (part.type === 'day') day = part.value;
+                if (part.type === 'hour') hour = part.value;
+                if (part.type === 'minute') minute = part.value;
+                if (part.type === 'second') second = part.value;
+            });
+
+            if (clockElement) {
+                clockElement.innerText = `${year}年${month}月${day}日 ${hour}:${minute}:${second}`;
+            }
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
 
         function setBackground() {
             const bgImage = document.getElementById('bgImage');
-            const baseUrl = window.innerWidth <= 768
-                ? 'https://img-api.wuxie.de/acg/13/sp'
-                : 'https://img-api.wuxie.de/acg/13/sp';
-            const imageUrl = `${baseUrl}&t=${Date.now()}`;
+            const baseUrl = 'https://api.ixiaowai.cn/gqapi/gqapi.php';
+            const imageUrl = `${baseUrl}?t=${Date.now()}`;
 
             bgImage.style.backgroundImage = `url(${imageUrl})`;
             bgImage.classList.add('loaded');
