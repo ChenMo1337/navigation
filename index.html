@@ -37,7 +37,22 @@ body {
             opacity: 0;
             transition: opacity 1s ease-in-out;
         }
-
+        .live-clock {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            font-weight: 400;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 14px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 999;
+            letter-spacing: 0.5px;
+        }
         .bg-image.loaded {
             opacity: 1;
         }
@@ -465,25 +480,14 @@ body {
     </div>
 
 
-
+<!-- 左上角实时时间 -->
+    <div id="liveClock" class="live-clock"></div>
+    <div class="container" id="mainContainer">
     <div class="container" id="mainContainer">
         <header class="header">
-            <h1>个人导航中心</h1>
-            <p>快速访问您的所有服务</p>
+            <h1>猫memeAI资讯站</h1>
+            <p>前沿AI资讯一网打尽 赋能你的数字未来</p>
         </header>
-
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-box" placeholder="搜索服务..." id="searchInput">
-        </div>
-
-        <div id="content"></div>
-
-        <div class="no-results" id="noResults">
-            <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-            <p>未找到匹配的服务</p>
-        </div>
-    </div>
 
     <script>
 
