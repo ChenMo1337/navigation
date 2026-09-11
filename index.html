@@ -1,513 +1,342 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>猫memeAI资讯站</title>
-    <link rel="stylesheet" href="./xiny/fontawesome/css/all.min.css">
-    <link rel="icon" href="./xiny/favicon.ico">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>猫memeAI资讯站</title>
+<link rel="stylesheet" href="./xiny/fontawesome/css/all.min.css">
+<link rel="icon" href="./xiny/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#0b1120; --bg2:#16213e;
+  --accent:#7dd3fc; --accent2:#c4b5fd; --accent3:#fbbf8c;
+  --glass:rgba(255,255,255,.06); --glass-border:rgba(255,255,255,.14); --glass-hover:rgba(255,255,255,.11);
+  --text:#f4f6fb; --text-dim:rgba(244,246,251,.66);
+  --radius:18px;
+  --display:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;
+  --body:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft Yahei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--body); color:var(--text); min-height:100vh; overflow-x:hidden;
+  background:
+    radial-gradient(ellipse at 20% -10%,#24345c 0%,transparent 55%),
+    radial-gradient(ellipse at 100% 100%,#2c1e4a 0%,transparent 50%),
+    linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 100%);
+  background-attachment:fixed;
+}
+.bg-image{position:fixed;inset:0;z-index:-2;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease}
+.bg-image.loaded{opacity:.5}
+.bg-tint{position:fixed;inset:0;z-index:-1;background:linear-gradient(160deg,rgba(11,17,32,.86),rgba(22,33,62,.78))}
 
-        body {
-            /* 换上了更现代的苹果科技风字体 */
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", STHeiti, "Microsoft Yahei", Tahoma, Simsun, sans-serif;
-            min-height: 100vh;
-            /* 极光渐变兜底背景，即使图片加载失败也非常好看 */
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            background-attachment: fixed;
-            transition: all 0.3s ease;
-            overflow-x: hidden;
-            position: relative;
-        }
+.glass{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 
-        /* 必应高清背景图片 */
-        .bg-image {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-        }
+/* loading */
+.loading{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;gap:1rem;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));transition:opacity .6s ease}
+.loading.hidden{opacity:0;pointer-events:none}
+.loading-ring{position:relative;width:48px;height:48px}
+.loading-ring::before{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid var(--glass-border);border-top-color:var(--accent);animation:spin 1s linear infinite}
+.loading-ring i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:1rem;animation:pulse 1.4s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.loading span{font-family:var(--display);font-size:.78rem;letter-spacing:3px;color:var(--text-dim)}
 
-        .bg-image.loaded {
-            opacity: 1;
-        }
+/* layout */
+.container{max-width:1080px;margin:0 auto;padding:4.5rem 2rem 3.5rem;opacity:0;transform:translateY(24px);transition:opacity .9s ease,transform .9s ease}
+.container.visible{opacity:1;transform:translateY(0)}
 
-        /* 加载动画 */
-        .loading-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            transition: all 0.8s ease;
-        }
+/* header */
+.header{position:relative;text-align:center;margin-bottom:3.75rem;padding-top:.5rem}
+.header-glow{position:absolute;width:360px;height:360px;left:50%;top:-60px;transform:translateX(-50%);
+  background:radial-gradient(circle,rgba(125,211,252,.22) 0%,transparent 70%);filter:blur(30px);z-index:-1;animation:glow 6s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:.55;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.08)}}
+.wordmark{display:flex;align-items:center;justify-content:center;gap:.85rem;margin-bottom:.8rem}
+.wordmark-icon{width:50px;height:50px;flex-shrink:0;border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font-size:1.25rem;color:var(--accent);box-shadow:0 0 26px rgba(125,211,252,.28)}
+.header h1{font-family:var(--display);font-size:2.6rem;font-weight:700;
+  background:linear-gradient(90deg,#f4f6fb 0%,#d6efff 45%,#bcc9ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.header p{font-size:1rem;color:var(--text-dim)}
 
-        .loading-container.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+/* nav cards */
+.section{margin-bottom:2.75rem}
+.section-title{font-size:1.05rem;font-weight:600;margin-bottom:1.2rem;display:flex;align-items:center;gap:.6rem}
+.section-title::before{content:'';width:3px;height:16px;border-radius:2px;background:var(--accent)}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:1rem}
+.card{border-radius:var(--radius);padding:1.3rem 1rem;text-decoration:none;color:var(--text);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;text-align:center;
+  transition:transform .25s ease,background .25s ease,border-color .25s ease}
+.card:hover,.card:focus-visible{transform:translateY(-4px);background:var(--glass-hover);border-color:rgba(125,211,252,.45)}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  color:var(--accent);background:rgba(125,211,252,.1)}
+.card:nth-child(3n+2) .card-icon{color:var(--accent2);background:rgba(196,181,253,.1)}
+.card:nth-child(3n+3) .card-icon{color:var(--accent3);background:rgba(251,191,140,.1)}
+.card-title{font-size:.95rem;font-weight:500}
 
-        .sk-chase {
-            width: 40px;
-            height: 40px;
-            position: relative;
-            animation: sk-chase 2.5s infinite linear both;
-        }
+/* widgets */
+.widgets-section{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:3.5rem}
+.glass-widget{border-radius:22px;padding:1.8rem 1.6rem;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.widget-label{font-size:.75rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem}
+.time-display,.weather-temp{font-family:var(--display);font-size:2.9rem;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.date-display,.weather-meta{margin-top:.6rem;font-size:.95rem;color:var(--text-dim)}
 
-        .sk-chase-dot {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            left: 0;
-            top: 0;
-            animation: sk-chase-dot 2.0s infinite ease-in-out both;
-        }
+.widget-clock{display:flex;align-items:center;justify-content:space-between;gap:1.5rem}
+.analog-clock{width:92px;height:92px;flex-shrink:0}
+.analog-clock svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 14px rgba(125,211,252,.22))}
+.clock-face{fill:rgba(255,255,255,.03);stroke:rgba(255,255,255,.22);stroke-width:2}
+.clock-tick{stroke:rgba(244,246,251,.32);stroke-width:2;stroke-linecap:round}
+.clock-tick.major{stroke:var(--accent);stroke-width:3}
+.hand{stroke-linecap:round;transform-box:view-box;transform-origin:100px 100px}
+.hour-hand{stroke:var(--text);stroke-width:5}
+.min-hand{stroke:var(--text);stroke-width:3.5}
+.sec-hand{stroke:var(--accent3);stroke-width:2}
+.clock-center{fill:var(--accent)}
 
-        .sk-chase-dot:before {
-            content: '';
-            display: block;
-            width: 25%;
-            height: 25%;
-            background-color: #fff;
-            border-radius: 100%;
-            animation: sk-chase-dot-before 2.0s infinite ease-in-out both;
-        }
+.weather-row{display:flex;align-items:flex-end;gap:.9rem}
+.weather-icon{font-size:2.1rem;color:var(--accent3);margin-bottom:.35rem}
+.retry-btn{margin-top:.7rem;font-size:.8rem;color:var(--accent);background:none;border:1px solid rgba(125,211,252,.35);
+  border-radius:100px;padding:.3rem .8rem;cursor:pointer;font-family:var(--body);display:none}
+.retry-btn:hover{background:rgba(125,211,252,.1)}
 
-        .sk-chase-dot:nth-child(1) { animation-delay: -1.1s; }
-        .sk-chase-dot:nth-child(2) { animation-delay: -1.0s; }
-        .sk-chase-dot:nth-child(3) { animation-delay: -0.9s; }
-        .sk-chase-dot:nth-child(4) { animation-delay: -0.8s; }
-        .sk-chase-dot:nth-child(5) { animation-delay: -0.7s; }
-        .sk-chase-dot:nth-child(6) { animation-delay: -0.6s; }
-        .sk-chase-dot:nth-child(1):before { animation-delay: -1.1s; }
-        .sk-chase-dot:nth-child(2):before { animation-delay: -1.0s; }
-        .sk-chase-dot:nth-child(3):before { animation-delay: -0.9s; }
-        .sk-chase-dot:nth-child(4):before { animation-delay: -0.8s; }
-        .sk-chase-dot:nth-child(5):before { animation-delay: -0.7s; }
-        .sk-chase-dot:nth-child(6):before { animation-delay: -0.6s; }
-
-        @keyframes sk-chase { 100% { transform: rotate(360deg); } }
-        @keyframes sk-chase-dot { 80%, 100% { transform: rotate(360deg); } }
-        @keyframes sk-chase-dot-before { 50% { transform: scale(0.4); } 100%, 0% { transform: scale(1.0); } }
-
-        /* 主容器 */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 4rem 2rem 3rem 2rem;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
-        }
-
-        .container.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* 头部 */
-        .header {
-            text-align: center;
-            margin-bottom: 3.5rem;
-            color: white;
-        }
-
-        .header h1 {
-            font-size: 2.8rem;
-            font-weight: 400;
-            margin-bottom: 0.8rem;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-            letter-spacing: 2px;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
-            letter-spacing: 1px;
-        }
-
-        /* 导航分组与卡片 */
-        .section { margin-bottom: 3rem; }
-        
-        .section-title {
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 3px;
-            border-radius: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-        }
-
-        .cards-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center; 
-            gap: 1.5rem;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .card {
-            width: 160px;
-            flex: 0 0 auto;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 20px;
-            padding: 1.5rem;
-            text-decoration: none;
-            color: white;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-            font-size: 1.8rem;
-            transition: all 0.3s ease;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .card:hover .card-icon {
-            transform: scale(1.15) rotateY(10deg);
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-        }
-
-        /* 底部精美小部件容器 (时间和天气) */
-        .widgets-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: center;
-            max-width: 800px;
-            margin: 4rem auto 1rem auto;
-        }
-
-        .glass-widget {
-            flex: 1;
-            min-width: 260px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 24px;
-            padding: 2rem;
-            color: white;
-            text-align: center;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            transition: transform 0.4s ease, background 0.4s ease;
-        }
-
-        .glass-widget:hover {
-            transform: translateY(-5px);
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-        }
-
-        /* 时钟排版 */
-        .time-display {
-            font-size: 3.5rem;
-            font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            font-variant-numeric: tabular-nums; /* 数字等宽对齐 */
-        }
-
-        .date-display {
-            font-size: 1.1rem;
-            opacity: 0.85;
-            letter-spacing: 1px;
-        }
-
-        /* 天气排版 */
-        .weather-top {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            opacity: 0.9;
-        }
-
-        .weather-temp {
-            font-size: 3.5rem;
-            font-weight: 300;
-            margin: 0.2rem 0;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-
-        .weather-desc {
-            font-size: 1.1rem;
-            opacity: 0.85;
-            letter-spacing: 1px;
-        }
-
-        /* 响应式适配 */
-        @media (max-width: 768px) {
-            .widgets-section { flex-direction: column; }
-            .time-display, .weather-temp { font-size: 3rem; }
-            .header h1 { font-size: 2.2rem; }
-        }
-
-        /* 滚动条美化 */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.6); }
-    </style>
+@media(max-width:640px){
+  .container{padding:3.5rem 1.25rem 2.5rem}
+  .header h1{font-size:2rem}
+  .widgets-section{grid-template-columns:1fr}
+  .time-display,.weather-temp{font-size:2.5rem}
+  .widget-clock{justify-content:center;text-align:center}
+  .analog-clock{width:76px;height:76px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:10px}
+</style>
 </head>
-
 <body>
-    <!-- 背景图片容器 -->
-    <div class="bg-image" id="bgImage"></div>
+<div class="bg-image" id="bgImage"></div>
+<div class="bg-tint"></div>
 
-    <!-- 初始加载动画 -->
-    <div class="loading-container" id="loadingContainer">
-        <div class="sk-chase">
-            <div class="sk-chase-dot"></div><div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div><div class="sk-chase-dot"></div>
-            <div class="sk-chase-dot"></div><div class="sk-chase-dot"></div>
-        </div>
+<div class="loading" id="loading">
+  <div class="loading-ring"><i class="fa-solid fa-cat"></i></div>
+  <span>加载中</span>
+</div>
+
+<div class="container" id="mainContainer">
+  <header class="header">
+    <div class="header-glow" aria-hidden="true"></div>
+    <div class="wordmark">
+      <span class="wordmark-icon glass" aria-hidden="true"><i class="fa-solid fa-cat"></i></span>
+      <h1>猫memeAI资讯站</h1>
+    </div>
+    <p>前沿AI资讯一网打尽，赋能你的数字未来</p>
+  </header>
+
+  <div id="content"></div>
+
+  <div class="widgets-section">
+    <div class="glass-widget glass widget-clock">
+      <div>
+        <div class="widget-label"><i class="fa-regular fa-clock"></i> 本地时间</div>
+        <div class="time-display" id="largeTime">00:00:00</div>
+        <div class="date-display" id="largeDate">加载中...</div>
+      </div>
+      <div class="analog-clock" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="92" class="clock-face"></circle>
+          <g id="clockTicks"></g>
+          <line id="hourHand" x1="100" y1="100" x2="100" y2="58" class="hand hour-hand"></line>
+          <line id="minHand" x1="100" y1="100" x2="100" y2="38" class="hand min-hand"></line>
+          <line id="secHand" x1="100" y1="112" x2="100" y2="26" class="hand sec-hand"></line>
+          <circle cx="100" cy="100" r="5" class="clock-center"></circle>
+        </svg>
+      </div>
     </div>
 
-    <!-- 主容器 -->
-    <div class="container" id="mainContainer">
-        <header class="header">
-            <h1>猫memeAI资讯站</h1>
-            <p>前沿AI资讯一网打尽 赋能你的数字未来</p>
-        </header>
-
-        <!-- 导航卡片注入区 -->
-        <div id="content"></div>
-
-        <!-- 底部大卡片：时间和天气 -->
-        <div class="widgets-section">
-            <!-- 精美时钟卡片 -->
-            <div class="glass-widget">
-                <div class="time-display" id="largeTime">00:00</div>
-                <div class="date-display" id="largeDate">加载中...</div>
-            </div>
-
-            <!-- 智能天气卡片 -->
-            <div class="glass-widget">
-                <div class="weather-top">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span id="wCity">定位中...</span>
-                </div>
-                <div class="weather-temp" id="wTemp">--°C</div>
-                <div class="weather-desc" id="wDesc">正在获取天气状况</div>
-            </div>
-        </div>
+    <div class="glass-widget glass">
+      <div class="widget-label"><i class="fa-solid fa-location-dot"></i> <span id="wCity">定位中...</span></div>
+      <div class="weather-row">
+        <i class="fa-solid fa-cloud weather-icon" id="wIcon"></i>
+        <span class="weather-temp" id="wTemp">--°</span>
+      </div>
+      <div class="weather-meta" id="wDesc">正在获取天气状况</div>
+      <button class="retry-btn" id="wRetry">重试</button>
     </div>
+  </div>
+</div>
 
-    <script>
-        let config = null;
+<script>
+/* ---------- 壁纸背景 ---------- */
+(function setBackground(){
+  const img = new Image();
+  img.src = `https://api.vvhan.com/api/wallpaper/views?t=${Date.now()}`;
+  img.onload = () => {
+    const el = document.getElementById('bgImage');
+    el.style.backgroundImage = `url(${img.src})`;
+    el.classList.add('loaded');
+  };
+})();
 
-        // 1. 设置高清背景图片（使用必应每日壁纸，超稳定）
-        function setBackground() {
-            const bgImage = document.getElementById('bgImage');
-            // 采用稳定的 Bing 壁纸 API
-            const imageUrl = `https://api.vvhan.com/api/wallpaper/views?t=${Date.now()}`;
-            
-            const img = new Image();
-            img.src = imageUrl;
-            img.onload = () => {
-                bgImage.style.backgroundImage = `url(${imageUrl})`;
-                bgImage.classList.add('loaded');
-            };
-            // 如果图片加载失败，CSS中预设的极光渐变背景会自动生效，不影响美观
-        }
+/* ---------- 数字 + 模拟时钟 ---------- */
+const days = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+function updateDigitalClock(){
+  const now = new Date();
+  document.getElementById('largeTime').textContent =
+    [now.getHours(), now.getMinutes(), now.getSeconds()].map(n => String(n).padStart(2,'0')).join(':');
+  document.getElementById('largeDate').textContent =
+    `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${days[now.getDay()]}`;
+}
+setInterval(updateDigitalClock, 1000);
+updateDigitalClock();
 
-        // 2. 实时时钟引擎
-        function updateTimeWidget() {
-            const timeEl = document.getElementById('largeTime');
-            const dateEl = document.getElementById('largeDate');
-            const now = new Date();
-            
-            // 处理时间
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            timeEl.innerText = `${hours}:${minutes}:${seconds}`;
+(function buildClockTicks(){
+  const group = document.getElementById('clockTicks');
+  const NS = 'http://www.w3.org/2000/svg';
+  for (let i = 0; i < 12; i++) {
+    const major = i % 3 === 0;
+    const rIn = major ? 76 : 82, rOut = 90;
+    const rad = ((i * 30) - 90) * Math.PI / 180;
+    const line = document.createElementNS(NS, 'line');
+    line.setAttribute('x1', 100 + rIn * Math.cos(rad));
+    line.setAttribute('y1', 100 + rIn * Math.sin(rad));
+    line.setAttribute('x2', 100 + rOut * Math.cos(rad));
+    line.setAttribute('y2', 100 + rOut * Math.sin(rad));
+    line.setAttribute('class', major ? 'clock-tick major' : 'clock-tick');
+    group.appendChild(line);
+  }
+})();
 
-            // 处理日期
-            const year = now.getFullYear();
-            const month = now.getMonth() + 1;
-            const date = now.getDate();
-            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-            const dayName = days[now.getDay()];
-            
-            dateEl.innerText = `${year}年${month}月${date}日 ${dayName}`;
-        }
-        setInterval(updateTimeWidget, 1000);
-        updateTimeWidget();
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+(function tickAnalogClock(){
+  const now = new Date();
+  const sec = now.getSeconds() + now.getMilliseconds() / 1000;
+  const min = now.getMinutes() + sec / 60;
+  const hr = (now.getHours() % 12) + min / 60;
+  document.getElementById('secHand').style.transform = `rotate(${sec * 6}deg)`;
+  document.getElementById('minHand').style.transform = `rotate(${min * 6}deg)`;
+  document.getElementById('hourHand').style.transform = `rotate(${hr * 30}deg)`;
+  reduceMotion ? setTimeout(tickAnalogClock, 1000) : requestAnimationFrame(tickAnalogClock);
+})();
 
-        // 3. 智能获取IP天气 (采用免费免密的 wttr 接口)
-        async function loadWeather() {
-            try {
-                // 这个接口会自动识别用户的 IP 并返回当地天气
-                const response = await fetch('https://wttr.in/?format=j1&lang=zh-cn');
-                if (!response.ok) throw new Error('网络响应异常');
-                const data = await response.json();
-                
-                const temp = data.current_condition[0].temp_C;
-                const desc = data.current_condition[0].lang_zh[0].value;
-                const city = data.nearest_area[0].areaName[0].value;
+/* ---------- 天气：浏览器定位 → IP 定位 → Open-Meteo，逐层兜底 ---------- */
+const WEATHER_CODES = {
+  0:['晴朗','fa-sun'], 1:['大部晴朗','fa-cloud-sun'], 2:['多云','fa-cloud-sun'], 3:['阴天','fa-cloud'],
+  45:['有雾','fa-smog'], 48:['雾凇','fa-smog'],
+  51:['小毛毛雨','fa-cloud-rain'], 53:['毛毛雨','fa-cloud-rain'], 55:['大毛毛雨','fa-cloud-rain'],
+  61:['小雨','fa-cloud-rain'], 63:['中雨','fa-cloud-showers-heavy'], 65:['大雨','fa-cloud-showers-heavy'],
+  71:['小雪','fa-snowflake'], 73:['中雪','fa-snowflake'], 75:['大雪','fa-snowflake'],
+  80:['阵雨','fa-cloud-showers-heavy'], 81:['阵雨','fa-cloud-showers-heavy'], 82:['强阵雨','fa-cloud-showers-heavy'],
+  95:['雷雨','fa-cloud-bolt'], 96:['雷雨伴冰雹','fa-cloud-bolt'], 99:['雷雨伴冰雹','fa-cloud-bolt'],
+};
 
-                document.getElementById('wTemp').innerText = `${temp}°C`;
-                document.getElementById('wCity').innerText = city;
-                document.getElementById('wDesc').innerText = desc;
-            } catch (error) {
-                console.error("天气加载失败", error);
-                document.getElementById('wTemp').innerText = '--°C';
-                document.getElementById('wCity').innerText = '未知地区';
-                document.getElementById('wDesc').innerText = '天气信息获取失败';
-            }
-        }
+function getBrowserLocation(timeout = 4000) {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) return reject();
+    const timer = setTimeout(reject, timeout);
+    navigator.geolocation.getCurrentPosition(
+      pos => { clearTimeout(timer); resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }); },
+      () => { clearTimeout(timer); reject(); },
+      { timeout, maximumAge: 600000 }
+    );
+  });
+}
 
-        // 4. 加载配置文件并渲染卡片
-        function fetchWithTimeout(url, timeout = 2000) {
-            return Promise.race([
-                fetch(url),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('请求超时')), timeout))
-            ]);
-        }
+async function getIpLocation() {
+  const r = await fetch('https://ipapi.co/json/').then(r => r.json());
+  if (!r.latitude) throw new Error('no ip location');
+  return { lat: r.latitude, lon: r.longitude, city: r.city || r.region };
+}
 
-        async function loadConfigWithRetries(url, maxRetries = 3) {
-            for (let attempt = 1; attempt <= maxRetries; attempt++) {
-                try {
-                    const res = await fetchWithTimeout(url, 2000);
-                    if (!res.ok) throw new Error(`状态码错误: ${res.status}`);
-                    return await res.json();
-                } catch (err) {
-                    if (attempt === maxRetries) throw err;
-                }
-            }
-        }
+async function reverseGeocode(lat, lon) {
+  try {
+    const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`).then(r => r.json());
+    return r.city || r.locality || null;
+  } catch { return null; }
+}
 
-        function createCard(item) {
-            return `
-                <a href="${item.url}" class="card" target="_blank">
-                    <div class="card-icon">
-                        <i class="${item.icon}"></i>
-                    </div>
-                    <div class="card-title">${item.name}</div>
-                </a>
-            `;
-        }
+async function fetchWeather(lat, lon) {
+  const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`).then(r => r.json());
+  return { temp: Math.round(r.current.temperature_2m), code: r.current.weather_code };
+}
 
-        function renderContent() {
-            const content = document.getElementById('content');
-            let html = '';
-            Object.keys(config).forEach(sectionName => {
-                html += `
-                    <div class="section">
-                        <h2 class="section-title">${sectionName}</h2>
-                        <div class="cards-grid">
-                            ${config[sectionName].map(createCard).join('')}
-                        </div>
-                    </div>
-                `;
-            });
-            content.innerHTML = html;
-        }
+async function loadWeather() {
+  const el = id => document.getElementById(id);
+  el('wCity').textContent = '定位中...';
+  el('wTemp').textContent = '--°';
+  el('wDesc').textContent = '正在获取天气状况';
+  el('wRetry').style.display = 'none';
 
-        // 5. 初始化核心逻辑
-        async function init() {
-            setBackground();
-            loadWeather(); // 异步加载天气，不阻塞页面
+  const loc = await getBrowserLocation().catch(() => getIpLocation().catch(() => null));
+  if (!loc) {
+    el('wCity').textContent = '定位失败';
+    el('wDesc').textContent = '无法获取位置信息';
+    el('wRetry').style.display = 'inline-block';
+    return;
+  }
 
-            try {
-                const configPromise = loadConfigWithRetries(`navigation.json?t=${Date.now()}`);
-                const domReadyPromise = new Promise(resolve => {
-                    if (document.readyState === 'loading') {
-                        document.addEventListener('DOMContentLoaded', resolve);
-                    } else {
-                        resolve();
-                    }
-                });
+  const cityPromise = loc.city ? Promise.resolve(loc.city) : reverseGeocode(loc.lat, loc.lon);
+  try {
+    const [weather, city] = await Promise.all([fetchWeather(loc.lat, loc.lon), cityPromise]);
+    const [desc, icon] = WEATHER_CODES[weather.code] || ['未知天气', 'fa-cloud'];
+    el('wCity').textContent = city || '当前位置';
+    el('wTemp').textContent = `${weather.temp}°`;
+    el('wDesc').textContent = desc;
+    el('wIcon').className = `fa-solid ${icon} weather-icon`;
+  } catch {
+    el('wCity').textContent = loc.city || '未知地区';
+    el('wDesc').textContent = '天气数据获取失败';
+    el('wRetry').style.display = 'inline-block';
+  }
+}
+document.getElementById('wRetry').addEventListener('click', loadWeather);
+loadWeather();
 
-                const [loadedConfig] = await Promise.all([configPromise, domReadyPromise]);
-                config = loadedConfig;
-                renderContent();
-            } catch (err) {
-                console.error('加载配置失败:', err);
-                document.getElementById('content').innerHTML = `
-                    <div class="cards-grid">
-                        <div class="card" style="padding: 2rem;">
-                            <div class="card-icon" style="color: #ff6b6b;"><i class="fas fa-exclamation-triangle"></i></div>
-                            <div class="card-title">配置加载失败</div>
-                        </div>
-                    </div>`;
-            } finally {
-                setTimeout(() => {
-                    document.getElementById('loadingContainer').classList.add('hidden');
-                    document.getElementById('mainContainer').classList.add('visible');
-                }, 500);
-            }
-        }
+/* ---------- 导航卡片 ---------- */
+function createCard(item) {
+  return `<a href="${item.url}" class="card glass" target="_blank" rel="noopener">
+    <div class="card-icon"><i class="${item.icon}"></i></div>
+    <div class="card-title">${item.name}</div>
+  </a>`;
+}
 
-        init();
-    </script>
+async function loadNavConfig(url, retries = 3) {
+  for (let i = 1; i <= retries; i++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(res.status);
+      return await res.json();
+    } catch (err) {
+      if (i === retries) throw err;
+    }
+  }
+}
+
+(async function init() {
+  try {
+    const config = await loadNavConfig(`navigation.json?t=${Date.now()}`);
+    document.getElementById('content').innerHTML = Object.entries(config).map(([section, items]) => `
+      <div class="section">
+        <h2 class="section-title">${section}</h2>
+        <div class="cards-grid">${items.map(createCard).join('')}</div>
+      </div>`).join('');
+  } catch (err) {
+    console.error('导航配置加载失败:', err);
+    document.getElementById('content').innerHTML = `
+      <div class="cards-grid" style="grid-template-columns:minmax(180px,260px)">
+        <div class="card glass">
+          <div class="card-icon" style="color:#ff8a8a;background:rgba(255,138,138,.12)"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="card-title">配置加载失败</div>
+        </div>
+      </div>`;
+  } finally {
+    setTimeout(() => {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('mainContainer').classList.add('visible');
+    }, 350);
+  }
+})();
+</script>
 </body>
-
 </html>
